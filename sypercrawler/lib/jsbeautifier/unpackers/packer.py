@@ -13,7 +13,7 @@
 """Unpacker for Dean Edward's p.a.c.k.e.r"""
 
 import re
-from syperCrawler.lib.jsbeautifier.unpackers import UnpackingError
+from sypercrawler.lib.jsbeautifier.unpackers import UnpackingError
 
 PRIORITY = 1
 
@@ -35,7 +35,7 @@ def unpack(source):
 
     def lookup(match):
         """Look up symbols in the synthetic symtab."""
-        word  = match.group(0)
+        word = match.group(0)
         return symtab[unbase(word)] or word
 
     source = re.sub(r'\b\w+\b', lookup, payload)
@@ -70,7 +70,7 @@ def _replacestrings(source):
 class Unbaser(object):
     """Functor for a given base. Will efficiently convert
     strings to natural numbers."""
-    ALPHABET  = {
+    ALPHABET = {
         62 : '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
         95 : (' !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ'
               '[\]^_`abcdefghijklmnopqrstuvwxyz{|}~')

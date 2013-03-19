@@ -7,7 +7,7 @@
 
 import pkgutil
 import re
-from syperCrawler.lib.jsbeautifier.unpackers import evalbased
+from sypercrawler.lib.jsbeautifier.unpackers import evalbased
 
 # NOTE: AT THE MOMENT, IT IS DEACTIVATED FOR YOUR SECURITY: it runs js!
 BLACKLIST = ['jsbeautifier.unpackers.evalbased']
@@ -35,7 +35,7 @@ def getunpackers():
             else:
                 unpackers.append(module)
 
-    return sorted(unpackers, key = lambda mod: mod.PRIORITY)
+    return sorted(unpackers, key=lambda mod: mod.PRIORITY)
 
 UNPACKERS = getunpackers()
 

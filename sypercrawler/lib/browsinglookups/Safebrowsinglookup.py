@@ -46,7 +46,6 @@ class SafebrowsinglookupClient(object):
         if self.key == '':
             raise ValueError("Missing API key")
 
-
     def lookup(self, *urls):
         """ Lookup a list of URLs against the Google Safe Browsing v2 lists.
 
@@ -58,7 +57,7 @@ class SafebrowsinglookupClient(object):
         results = {}
         count = 0
         while count * 500 < len(urls):
-            inputs = urls[count * 500 : (count + 1) * 500]
+            inputs = urls[count * 500: (count + 1) * 500]
             body = len(inputs)
 
             for url in inputs:
@@ -73,43 +72,39 @@ class SafebrowsinglookupClient(object):
                 response = urllib2.urlopen(url, body)
 
                 self.__debug("At least 1 match\n")
-                results.update( self.__parse(response.read().strip(), inputs) )
+                results.update(self.__parse(response.read().strip(), inputs))
 
             except Exception, e:
-                if hasattr(e, 'code') and e.code == httplib.NO_CONTENT: # 204
+                if hasattr(e, 'code') and e.code == httplib.NO_CONTENT:  # 204
                     self.__debug("No match\n")
-                    results.update( self.__ok(inputs) )
+                    results.update(self.__ok(inputs))
 
-                elif hasattr(e, 'code') and e.code == httplib.BAD_REQUEST: # 400
+                elif hasattr(e, 'code') and e.code == httplib.BAD_REQUEST:  # 400
                     self.__error("Invalid request")
-                    results.update( self.__errors(inputs) )
+                    results.update(self.__errors(inputs))
 
-                elif hasattr(e, 'code') and e.code == httplib.UNAUTHORIZED: # 401
+                elif hasattr(e, 'code') and e.code == httplib.UNAUTHORIZED:  # 401
                     self.__error("Invalid API key")
-                    results.update( self.__errors(inputs) )
+                    results.update(self.__errors(inputs))
 
-                elif hasattr(e, 'code') and e.code == httplib.FORBIDDEN: # 403 (should be 401)
+                elif hasattr(e, 'code') and e.code == httplib.FORBIDDEN:  # 403 (should be 401)
                     self.__error("Invalid API key")
-                    results.update( self.__errors(inputs) )
+                    results.update(self.__errors(inputs))
 
-                elif hasattr(e, 'code') and e.code == httplib.SERVICE_UNAVAILABLE: # 503
+                elif hasattr(e, 'code') and e.code == httplib.SERVICE_UNAVAILABLE:  # 503
                     self.__error("Server error, client may have sent too many requests")
-                    results.update( self.__errors(inputs) )
+                    results.update(self.__errors(inputs))
 
                 else:
                     self.__error("Unexpected server response")
                     self.__debug(e)
-                    results.update( self.__errors(inputs) )
-
+                    results.update(self.__errors(inputs))
 
             count = count + 1
 
         return results
 
-
-
     # Private methods
-
     # Not much is actually done, full URL canonicalization is not required with the Lookup library according to the API documentation
     def __canonical(self, url=''):
         # remove leading/ending white spaces
@@ -125,23 +120,20 @@ class SafebrowsinglookupClient(object):
 
         return url
 
-
     def __parse(self, response, urls):
         lines = response.splitlines()
 
         if (len(urls) != len(lines)):
-            self.__error("Number of URLs in the response does not match the number of URLs in the request");
-            self.__debug( str(len(urls)) + " / " + str(len(lines)) )
-            self.__debug(response);
-            return self.__errors(urls);
+            self.__error("Number of URLs in the response does not match the number of URLs in the request")
+            self.__debug(str(len(urls)) + " / " + str(len(lines)))
+            self.__debug(response)
+            return self.__errors(urls)
 
-
-        results = { }
+        results = {}
         for i in range(0, len(lines)):
-            results.update({urls[i] : lines[i]})
+            results.update({urls[i]: lines[i]})
 
         return results
-
 
     def __errors(self, urls):
         results = {}
@@ -150,7 +142,6 @@ class SafebrowsinglookupClient(object):
 
         return results
 
-
     def __ok(self, urls):
         results = {}
         for url in urls:
@@ -158,11 +149,9 @@ class SafebrowsinglookupClient(object):
 
         return results
 
-
     def __debug(self, message=''):
         if self.debug == 1:
             print message
-
 
     def __error(self, message=''):
         if self.debug == 1 or self.error == 1:

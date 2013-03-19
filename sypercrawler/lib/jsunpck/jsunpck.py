@@ -658,8 +658,8 @@ class Simplifier:
 
     def _const_arithmetic(self, node):
         tbl = {
-            '-': lambda x: -x,
-            '~': lambda x: ~x,
+            '-': lambda x:-x,
+            '~': lambda x:~x,
         }
         tbl2 = {
             '+': lambda x, y: x + y,

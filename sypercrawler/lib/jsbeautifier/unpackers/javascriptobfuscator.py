@@ -26,7 +26,7 @@ def smartsplit(code):
     pos = 0
     while pos < len(code):
         if code[pos] == '"':
-            word = '' # new word
+            word = ''  # new word
             pos += 1
             while pos < len(code):
                 if code[pos] == '"':

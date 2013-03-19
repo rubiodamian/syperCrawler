@@ -108,44 +108,44 @@ tokens = dict(enumerate((
 # counterparts (+ in the example), so that the opRegExp regular expression
 # synthesized from this list makes the longest possible match.
 opTypeNames = [
-        ('\n',   "NEWLINE"),
-        (';',    "SEMICOLON"),
-        (',',    "COMMA"),
-        ('?',    "HOOK"),
-        (':',    "COLON"),
-        ('||',   "OR"),
-        ('&&',   "AND"),
-        ('|',    "BITWISE_OR"),
-        ('^',    "BITWISE_XOR"),
-        ('&',    "BITWISE_AND"),
-        ('===',  "STRICT_EQ"),
-        ('==',   "EQ"),
-        ('=',    "ASSIGN"),
-        ('!==',  "STRICT_NE"),
-        ('!=',   "NE"),
-        ('<<',   "LSH"),
-        ('<=',   "LE"),
-        ('<',    "LT"),
-        ('>>>',  "URSH"),
-        ('>>',   "RSH"),
-        ('>=',   "GE"),
-        ('>',    "GT"),
-        ('++',   "INCREMENT"),
-        ('--',   "DECREMENT"),
-        ('+',    "PLUS"),
-        ('-',    "MINUS"),
-        ('*',    "MUL"),
-        ('/',    "DIV"),
-        ('%',    "MOD"),
-        ('!',    "NOT"),
-        ('~',    "BITWISE_NOT"),
-        ('.',    "DOT"),
-        ('[',    "LEFT_BRACKET"),
-        (']',    "RIGHT_BRACKET"),
-        ('{',    "LEFT_CURLY"),
-        ('}',    "RIGHT_CURLY"),
-        ('(',    "LEFT_PAREN"),
-        (')',    "RIGHT_PAREN"),
+        ('\n', "NEWLINE"),
+        (';', "SEMICOLON"),
+        (',', "COMMA"),
+        ('?', "HOOK"),
+        (':', "COLON"),
+        ('||', "OR"),
+        ('&&', "AND"),
+        ('|', "BITWISE_OR"),
+        ('^', "BITWISE_XOR"),
+        ('&', "BITWISE_AND"),
+        ('===', "STRICT_EQ"),
+        ('==', "EQ"),
+        ('=', "ASSIGN"),
+        ('!==', "STRICT_NE"),
+        ('!=', "NE"),
+        ('<<', "LSH"),
+        ('<=', "LE"),
+        ('<', "LT"),
+        ('>>>', "URSH"),
+        ('>>', "RSH"),
+        ('>=', "GE"),
+        ('>', "GT"),
+        ('++', "INCREMENT"),
+        ('--', "DECREMENT"),
+        ('+', "PLUS"),
+        ('-', "MINUS"),
+        ('*', "MUL"),
+        ('/', "DIV"),
+        ('%', "MOD"),
+        ('!', "NOT"),
+        ('~', "BITWISE_NOT"),
+        ('.', "DOT"),
+        ('[', "LEFT_BRACKET"),
+        (']', "RIGHT_BRACKET"),
+        ('{', "LEFT_CURLY"),
+        ('}', "RIGHT_CURLY"),
+        ('(', "LEFT_PAREN"),
+        (')', "RIGHT_PAREN"),
     ]
 
 keywords = {}
@@ -188,7 +188,7 @@ reRegExp = re.compile(r'^\/((?:\\.|\[(?:\\.|[^\]])*\]|[^\/])+)\/([gimy]*)')
 
 class SyntaxError_(ParseError):
     def __init__(self, message, filename, lineno):
-        ParseError.__init__(self, "Syntax error: %s\n%s:%s" %
+        ParseError.__init__(self, "Syntax error: %s\n%s:%s" % 
                 (message, filename, lineno))
 
 class Tokenizer(object):
@@ -218,7 +218,7 @@ class Tokenizer(object):
     def peek(self):
         if self.lookahead:
             next = self.tokens.get((self.tokenIndex + self.lookahead) & 3)
-            if self.scanNewlines and (getattr(next, "lineno", None) !=
+            if self.scanNewlines and (getattr(next, "lineno", None) != 
                     getattr(self, "lineno", None)):
                 tt = NEWLINE
             else:
@@ -288,7 +288,7 @@ class Tokenizer(object):
                 token.value = eval(match.group(0))
                 return match.group(0)
 
-            match = re.match(r'^[$_\w]+', input__)       # FIXME no ES3 unicode
+            match = re.match(r'^[$_\w]+', input__)  # FIXME no ES3 unicode
             if match:
                 id_ = match.group(0)
                 token.type_ = keywords.get(id_, IDENTIFIER)
@@ -803,7 +803,7 @@ opPrecedence = {
     "DELETE": 14, "VOID": 14, "TYPEOF": 14,
     # "PRE_INCREMENT": 14, "PRE_DECREMENT": 14,
     "NOT": 14, "BITWISE_NOT": 14, "UNARY_PLUS": 14, "UNARY_MINUS": 14,
-    "INCREMENT": 15, "DECREMENT": 15,     # postfix
+    "INCREMENT": 15, "DECREMENT": 15,  # postfix
     "NEW": 16,
     "DOT": 17
 }
@@ -813,7 +813,7 @@ for i in opPrecedence.copy():
     opPrecedence[globals()[i]] = opPrecedence[i]
 
 opArity = {
-    "COMMA": -2,
+    "COMMA":-2,
     "ASSIGN": 2,
     "HOOK": 3,
     "OR": 2,
@@ -829,7 +829,7 @@ opArity = {
     "DELETE": 1, "VOID": 1, "TYPEOF": 1,
     # "PRE_INCREMENT": 1, "PRE_DECREMENT": 1,
     "NOT": 1, "BITWISE_NOT": 1, "UNARY_PLUS": 1, "UNARY_MINUS": 1,
-    "INCREMENT": 1, "DECREMENT": 1,     # postfix
+    "INCREMENT": 1, "DECREMENT": 1,  # postfix
     "NEW": 1, "NEW_WITH_ARGS": 2, "DOT": 2, "INDEX": 2, "CALL": 2,
     "ARRAY_INIT": 1, "OBJECT_INIT": 1, "GROUP": 1
 }
@@ -942,7 +942,7 @@ def Expression(t, x, stop=None):
 
             elif tt in (INCREMENT, DECREMENT):
                 if t.scanOperand:
-                    operators.append(Node(t)) # prefix increment or decrement
+                    operators.append(Node(t))  # prefix increment or decrement
                 else:
                     # Don't cross a line boundary for postfix {in,de}crement.
                     if (t.tokens.get((t.tokenIndex + t.lookahead - 1)
@@ -1054,7 +1054,7 @@ def Expression(t, x, stop=None):
                     x.parenLevel += 1
                 else:
                     while (operators and
-                            opPrecedence.get(operators[-1].type_) >
+                            opPrecedence.get(operators[-1].type_) > 
                             opPrecedence[NEW]):
                         reduce_()
 
@@ -1143,4 +1143,4 @@ def parse(source, filename=None, starting_line_number=1):
     return n
 
 if __name__ == "__main__":
-    print str(parse(file(sys.argv[1]).read(),sys.argv[1]))
+    print str(parse(file(sys.argv[1]).read(), sys.argv[1]))

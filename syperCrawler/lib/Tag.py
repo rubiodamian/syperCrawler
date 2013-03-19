@@ -7,7 +7,6 @@ from syperCrawler.lib.KeywordAnalizer import KeywordAnalizer
 from scrapy import log
 import unicodedata, mimetypes, urlparse, urllib2
 from urlparse import urlsplit
-from syperCrawler.lib import jsbeautifier
 
 class Tag(object, MessageReport, ItemContext):
 	src = ""
@@ -132,14 +131,7 @@ class ScriptTag(Tag):
 			return self.getBody()
 		
 	def checkForObfuscatedJavascript(self):
-		js = self.getJavascriptCode()
-#		print len(jsbeautifier.beautify(js)),jsbeautifier.beautify(js)
-#		print "\n"
-#		print len(js),js
-		from syperCrawler.lib.jsunpck import jsunpck
-#		obj = jsunpck.parse(js)
-		print jsbeautifier.beautify(js)
-		print len(js)
+		pass
 
 	def checkForSuspiciousStuff(self):
 		Tag.checkForSuspiciousStuff(self)

@@ -1,4 +1,4 @@
-from syperCrawler.lib.Tag import ATag,IframeTag,ImgTag,ScriptTag,NullTag
+from sypercrawler.lib.tag import ATag,IframeTag,ImgTag,ScriptTag,NullTag
 from string import capitalize
 
 class TagFactory():

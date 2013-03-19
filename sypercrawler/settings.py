@@ -8,13 +8,13 @@
 
 BOT_NAME = 'syperCrawler'
 
-SPIDER_MODULES = ['syperCrawler.spiders']
-NEWSPIDER_MODULE = 'syperCrawler.spiders'
+SPIDER_MODULES = ['sypercrawler.spiders']
+NEWSPIDER_MODULE = 'sypercrawler.spiders'
 ITEM_PIPELINES = [
 #    'syperCrawler.pipelines.IframeTagPipeline',
 #    'syperCrawler.pipelines.ATagPipeline',
 #    'syperCrawler.pipelines.ImgTagPipeline',
-    'syperCrawler.pipelines.ScriptTagPipeline']
+    'sypercrawler.pipelines.ScriptTagPipeline']
 #LOG_LEVEL = 'INFO'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

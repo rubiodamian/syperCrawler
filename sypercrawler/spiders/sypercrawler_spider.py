@@ -4,7 +4,7 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.http import FormRequest, Request
 from scrapy import log
 
-from syperCrawler.items import ResponseItem
+from sypercrawler.items import ResponseItem
 
 
 class SyperCrawlerSpider(CrawlSpider):

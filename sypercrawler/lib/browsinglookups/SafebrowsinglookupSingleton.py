@@ -1,6 +1,6 @@
 """syperCrawler.lib.SafebrowsinglookupClient is a Singleton Class for the safebrowsinglookup.SafebrowsinglookupClient """
 
-from syperCrawler.lib.safebrowsinglookup.Safebrowsinglookup import SafebrowsinglookupClient as GoogleSafebrowsinglookupClient
+from sypercrawler.lib.browsinglookups.Safebrowsinglookup import SafebrowsinglookupClient as GoogleSafebrowsinglookupClient
 
 class SafebrowsinglookupClient(object):
     ## Stores the unique Singleton instance-

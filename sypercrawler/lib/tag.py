@@ -1,12 +1,14 @@
-from __future__ import division
-from syperCrawler.lib.safebrowsinglookup.SafebrowsinglookupSingleton import SafebrowsinglookupClient
-from syperCrawler.lib.interfaces.reporting.MessageReport import MessageReport
-from syperCrawler.lib.interfaces.ItemContext import ItemContext
-from syperCrawler.lib.LinkChecker import LinkChecker
-from syperCrawler.lib.KeywordAnalizer import KeywordAnalizer
+from __future__ import division #allow to the division return a result
+from sypercrawler.lib.browsinglookups.SafebrowsinglookupSingleton import SafebrowsinglookupClient
+from sypercrawler.lib.interfaces.reporting import MessageReport
+from sypercrawler.lib.interfaces.itemcontext import ItemContext
+from sypercrawler.lib import linkcheck
+from sypercrawler.lib.keywordanalizer import KeywordAnalizer
 from scrapy import log
-import unicodedata, mimetypes, urlparse, urllib2
-from urlparse import urlsplit
+import unicodedata 
+import mimetypes
+import urlparse
+import urllib2
 
 class Tag(object, MessageReport, ItemContext):
 	src = ""
@@ -41,7 +43,7 @@ class Tag(object, MessageReport, ItemContext):
 		self.setUnicodeTag(htmlXPS.extract())
 	
 	def checkRemoteURL(self, url):
-		response = LinkChecker().checkURL(url)
+		response = linkcheck.checkURL(url)
 		if(isinstance(response, int)):
 			if(response / 100 == 2):  # success
 				log.msg("[%s] %r reference status its ok (%d)" % (self.getPipeline(), self, response), level=log.DEBUG, spider=self.getSpider())
@@ -77,7 +79,7 @@ class Tag(object, MessageReport, ItemContext):
 		return ['image/gif', 'image/jpeg' , 'image/png'  , 'application/x-shockwave-flash'  , 'image/psd'  , 'image/bmp image/tiff'  , 'image/tiff'  , 'application/octet-stream'  , 'image/jp2 ' , 'application/octet-stream', 'application/octet-stream' , 'application/x-shockwave-flash' , 'image/iff' , 'image/vnd.wap.wbmp', 'image/xbm' , 'image/vnd.microsoft.icon']
 	
 	def getURLExtension(self, url):
-		return mimetypes.guess_type(urlsplit(url)[2])[0]
+		return mimetypes.guess_type(urlparse.urlsplit(url)[2])[0]
 	
 	def isImage(self):
 		return self.getURLExtension(self.getSrc()) in self.getImageMimeTypes()

@@ -5,7 +5,7 @@
 #un pipe por tag, reportar con arbol de objetos al q le mando el xpath y se imprimen
 
 from scrapy.item import Item, Field
-from syperCrawler.lib.TagFactory import TagFactory
+from sypercrawler.lib.tagfactory import TagFactory
 
 class ResponseItem(Item):
     url = Field()

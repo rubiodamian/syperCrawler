@@ -26,11 +26,7 @@ def smartsplit(code):
     pos = 0
     while pos < len(code):
         if code[pos] == '"':
-<<<<<<< HEAD
             word = ''  # new word
-=======
-            word = '' # new word
->>>>>>> branch 'master' of https://github.com/rubiodamian/syperCrawler.git
             pos += 1
             while pos < len(code):
                 if code[pos] == '"':

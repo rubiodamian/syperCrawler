@@ -15,14 +15,7 @@ ITEM_PIPELINES = [
 #    'syperCrawler.pipelines.ATagPipeline',
 #    'syperCrawler.pipelines.ImgTagPipeline',
     'sypercrawler.pipelines.ScriptTagPipeline']
-<<<<<<< HEAD
 # LOG_LEVEL = 'INFO'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'syperCrawler (+http://www.yourdomain.com)'
-=======
-#LOG_LEVEL = 'INFO'
-
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'syperCrawler (+http://www.yourdomain.com)'
->>>>>>> branch 'master' of https://github.com/rubiodamian/syperCrawler.git

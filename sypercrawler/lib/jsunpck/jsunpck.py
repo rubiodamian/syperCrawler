@@ -658,7 +658,6 @@ class Simplifier:
 
     def _const_arithmetic(self, node):
         tbl = {
-<<<<<<< HEAD
             '-': lambda x:-x,
             '~': lambda x:~x,
         }
@@ -743,89 +742,3 @@ if __name__ == '__main__':
     obj = parse(open(sys.argv[1], 'rb').read())
 
     print jsbeautifier.beautify(str(Simplifier(obj)))
-=======
-            '-': lambda x: -x,
-            '~': lambda x: ~x,
-        }
-        tbl2 = {
-            '+': lambda x, y: x + y,
-            '-': lambda x, y: x - y,
-            '*': lambda x, y: x * y,
-            '/': lambda x, y: x / y,
-            '%': lambda x, y: x % y,
-            '>>': lambda x, y: x >> y,
-            '<<': lambda x, y: x << y,
-            '^': lambda x, y: x ^ y,
-            '|': lambda x, y: x | y,
-            '&&': lambda x, y: y if x else 0,
-            '||': lambda x, y: x if x else y,
-        }
-        if Base.__cmp__(node, Operation(None, Int(), Int())) == 0:
-            if node.right is None:
-                return Int(tbl[node.typ](node.left.value))
-
-            if node.typ in ('/', '%') and not node.right.value:
-                return
-
-            return Int(tbl2[node.typ](node.left.value, node.right.value))
-
-    def _const_str_length(self, node):
-        if node == Dot(String(), Identifier('length')):
-            return Int(len(node.left.value))
-
-    def _const_comparison(self, node):
-        tbl = {
-            '<': lambda x, y: x < y,
-            '>': lambda x, y: x > y,
-            '==': lambda x, y: x == y,
-            '!=': lambda x, y: x != y,
-        }
-
-        if Base.__cmp__(node, Comparison(None, Int(), Int())) == 0 and \
-                node.typ in tbl:
-            val = tbl[node.typ](node.left.value, node.right.value)
-            return Constant('true' if val else 'false')
-
-    def _hardcoded_if(self, node):
-        if isinstance(node, Conditional) and \
-                isinstance(node.condition, Constant):
-            tbl = {
-                'true': node.then,
-                'false': node.else_,
-            }
-            return tbl.get(node.condition.typ, node)
-
-    def _complex_expr(self, node):
-        # x = x + 1 -> x++
-        if node == Assign('=', Identifier(),
-                          Operation('+', Identifier(), Int())) and \
-                node.left.name == node.right.left.name:
-            return Operation('++', Identifier(node.left.name), None)
-
-        # x = 1 + x -> x++
-        if node == Assign('=', Identifier(),
-                          Operation('+', Int(), Identifier())) and \
-                node.left.name == node.right.right.name:
-            return Operation('++', Identifier(node.left.name), None)
-
-        # (x - 1) != 0 -> x != 1
-        if node == Comparison('!=',
-                              Operation('-', Identifier(), Int()),
-                              Int()):
-            return Comparison('!=',
-                              node.left.left,
-                              Int(node.left.right.value + node.right.value))
-
-    def _replace_regexp(self, node):
-        # str.replace(/^/, String) -> str
-        if node == Call(Dot(String(), Identifier('replace')),
-                        Array(None, [Regexp('^', ''),
-                                     Identifier('String')])):
-            return node.function.left
-
-if __name__ == '__main__':
-    import sys
-    obj = parse(open(sys.argv[1], 'rb').read())
-
-    print jsbeautifier.beautify(str(Simplifier(obj)))
->>>>>>> branch 'master' of https://github.com/rubiodamian/syperCrawler.git

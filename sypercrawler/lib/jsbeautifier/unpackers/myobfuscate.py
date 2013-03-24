@@ -40,11 +40,7 @@ try:
 except ImportError:
     from urllib.parse import unquote
 
-<<<<<<< HEAD
 from sypercrawler.lib.jsbeautifier.unpackers import UnpackingError
-=======
-from syperCrawler.lib.jsbeautifier.unpackers import UnpackingError
->>>>>>> branch 'master' of https://github.com/rubiodamian/syperCrawler.git
 
 PRIORITY = 1
 

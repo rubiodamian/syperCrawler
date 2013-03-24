@@ -1,4 +1,5 @@
 from __future__ import division
+<<<<<<< HEAD
 import  re
 import unicodedata
 from collections import Counter
@@ -29,6 +30,36 @@ class KeywordAnalizer(object):
             return self.keywordDensity(wordsCounter.most_common(1)[0][1], wordsCount) > 3
         else:
             return False
+=======
+import  re, unicodedata
+from collections import Counter
+class KeywordAnalizer(object):
+    _slugify_strip_re = re.compile(r'[^\w\s-]')
+    _slugify_hyphenate_re = re.compile(r'[-\s]+')
+    
+    def slugify(self, value, separator=' '):
+        if not isinstance(value, unicode):
+            value = unicode(value)
+        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+        value = unicode(self._slugify_strip_re.sub('', value).strip().lower())
+        return str(self._slugify_hyphenate_re.sub(separator, value))
+    
+    def keywordDensity(self, nkr, tkn):
+        ''' Where Nkr is how many times you repeated a specific keyword and Tkn the total words in the analyzed text.
+        Returns the round percent of this formula'''
+        return round((nkr / tkn) * 100)
+    
+    def checkForKeywordStuffing(self, string):
+        text = self.slugify(string)
+        words = list(x for x in text.split(" ") if x not in self.stopWords())
+        wordsCount = len(words)
+        if(wordsCount >= 10):
+            wordsCounter = Counter(words)
+            return self.keywordDensity(wordsCounter.most_common(1)[0][1], wordsCount) > 3
+        else:
+            return False
+
+>>>>>>> branch 'master' of https://github.com/rubiodamian/syperCrawler.git
 
     def stopWords(self):
         return ['a', 'aca', 'ahi', 'ajena', 'ajenas', 'ajeno', 'ajenos', 'al', 'algo', 'algun',

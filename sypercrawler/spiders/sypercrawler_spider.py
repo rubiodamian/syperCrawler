@@ -30,32 +30,34 @@ class SyperCrawlerSpider(CrawlSpider):
 #             self.log("Login successful", level=log.INFO)
 #             return Request(url="http://localhost/dvwa/vulnerabilities/xss_s/",
 #                    callback=self.parse_tastypage)
-    urlBlackList = []
+    _url_blacklist = []
 
-    def getUrlBlackList(self):
-        return self.urlBlackList
+    @property
+    def url_blacklist(self):
+        return self._url_blacklist
 
-    def setUrlBlackList(self, urlBlackList):
-        self.urlBlackList = urlBlackList
+    @url_blacklist.setter
+    def url_blacklist(self, url_blacklist):
+        self._url_blacklist = url_blacklist
 
-    def addUrlToBlackList(self, url):
+    def add_url_to_blacklist(self, url):
         if(url):
-            self.getUrlBlackList().append(url)
+            self.url_blacklist.append(url)
 
-    def isUrlInBlackList(self, url):
-        return url in self.getUrlBlackList()
+    def is_url_in_blacklist(self, url):
+        return url in self.url_blacklist
 
     def parse_item(self, response):
         hxs = HtmlXPathSelector(response)
         item = ResponseItem()
-        item.setUrl(response.url)
+        item.set_url(response.url)
         print "\t"
         self.log("Parsing <a> tags...", level=log.INFO)
-        item.setATags(hxs.select('//a[contains(@href, "http")]'))
+        item.set_a_tags(hxs.select('//a[contains(@href, "http")]'))
         self.log("Parsing <iframe> tags...", level=log.INFO)
-        item.setIframeTags(hxs.select('//iframe[contains(@src, "http")]'))
+        item.set_iframe_tags(hxs.select('//iframe[contains(@src, "http")]'))
         self.log("Parsing <script> tags...", level=log.INFO)
-        item.setScriptTags(hxs.select('//script'))
+        item.set_script_tags(hxs.select('//script'))
         self.log("Parsing <img> tags...\n", level=log.INFO)
-        item.setImgTags(hxs.select('//img[contains(@src, "http")]'))
+        item.set_img_tags(hxs.select('//img[contains(@src, "http")]'))
         return item

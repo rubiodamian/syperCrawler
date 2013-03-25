@@ -1,24 +1,35 @@
 class ItemContext():
 
-    def setItemContext(self, currentUrl="", spider="", pipeline=""):
-        self.setCurrentUrl(currentUrl)
-        self.setSpider(spider)
-        self.setPipeline(pipeline)
+    def __init__(self, current_url="", spider="", pipeline=""):
+        self._current_url = current_url
+        self._spider = spider
+        self._pipeline = pipeline
 
-    def setCurrentUrl(self, currentUrl):
-        self.currentUrl = currentUrl
-
-    def getCurrentUrl(self):
-        return self.currentUrl
-
-    def setSpider(self, spider):
+    def item_context(self, current_url="", spider="", pipeline=""):
+        self.current_url = current_url
         self.spider = spider
-
-    def getSpider(self):
-        return self.spider
-
-    def setPipeline(self, pipeline):
         self.pipeline = pipeline
 
-    def getPipeline(self):
-        return self.pipeline
+    @property
+    def current_url(self):
+        return self._current_url
+
+    @current_url.setter
+    def current_url(self, current_url):
+        self._current_url = current_url
+
+    @property
+    def spider(self):
+        return self._spider
+
+    @spider.setter
+    def spider(self, spider):
+        self._spider = spider
+
+    @property
+    def pipeline(self):
+        return self._pipeline
+
+    @pipeline.setter
+    def pipeline(self, pipeline):
+        self._pipeline = pipeline

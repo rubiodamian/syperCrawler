@@ -1,12 +1,11 @@
 from urllib2 import urlopen, HTTPError, URLError
-
 '''Checks if an url is broken or not and returns the request status code
 "response" can be a status code (404,500,200) or,
  if the request have a redirection (like 301 or 302),
   the url of that redirection'''
 
 
-def checkURL(url):
+def check_url(url):
 
     try:
         response = urlopen(url=url, timeout=10)

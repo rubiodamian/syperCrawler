@@ -31,25 +31,25 @@ class ResponseItem(Item):
         return self.get('scriptTags', {})
 
     def setScriptTags(self, scriptTags):
-        self['scriptTags'] = TagFactory().getTagsFromHtmlXPathSelector(scriptTags)
+        self['scriptTags'] = TagFactory().tags_from_html_xpathselector(scriptTags)
 
     def getATags(self):
         return self.get('aTags', {})
 
     def setATags(self, aTags):
-        self['aTags'] = TagFactory().getTagsFromHtmlXPathSelector(aTags)
+        self['aTags'] = TagFactory().tags_from_html_xpathselector(aTags)
 
     def getImgTags(self):
         return self.get('imgTags', {})
 
     def setImgTags(self, imgTags):
-        self['imgTags'] = TagFactory().getTagsFromHtmlXPathSelector(imgTags)
+        self['imgTags'] = TagFactory().tags_from_html_xpathselector(imgTags)
 
     def getIframeTags(self):
         return self.get('iframeTags', {})
 
     def setIframeTags(self, iframeTags):
-        self['iframeTags'] = TagFactory().getTagsFromHtmlXPathSelector(iframeTags)
+        self['iframeTags'] = TagFactory().tags_from_html_xpathselector(iframeTags)
 
     def getDebug(self):
         return self.get('debug')

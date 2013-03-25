@@ -4,30 +4,33 @@
 class ReportingMessage(object):
 
     def __init__(self, message="", prefix=""):
-        self.setMessage(message)
+        self._message = message
 
-    def setMessage(self, message, prefix=""):
+    @property
+    def message(self):
+        return self._message
+
+    @message.setter
+    def message(self, message, prefix=""):
         if(prefix):
             message = "[%s] %s" % (prefix + message)
-        self.message = message
-
-    def getMessage(self):
-        return self.message
+        self._message = message
 
 
 class MessageReport():
 
     def __init__(self):
-        self.reportMessages = []
+        self._report_messages = []
 
-    def getReportMessages(self):
-        return self.reportMessages
+    @property
+    def report_messages(self):
+        return self._report_messages
 
-    def addReportMessage(self, reportMessage, prefix=""):
-        self.getReportMessages().append(ReportingMessage(reportMessage, prefix))
+    def add_report_messages(self, report_messages, prefix=""):
+        self.report_messages.append(ReportingMessage(report_messages, prefix))
 
-    def getLastReportMessage(self):
-        return self.getReportMessages()[len(self.getReportMessages()) - 1]
+    def last_report_messages(self):
+        return self.report_messages[len(self.report_messages) - 1]
 
-    def modifyLastReportMessage(self, message):
-        self.getLastReportMessage().setMessage(message)
+    def modify_last_report_messages(self, message):
+        self.report_messages.message(message)

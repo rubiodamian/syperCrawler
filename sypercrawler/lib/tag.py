@@ -14,264 +14,284 @@ import urllib2
 
 class Tag(object, MessageReport, ItemContext):
 
-    def __init__(self, src="", unicodeTag=""):
-        self.setSrc(src)
-        self.setUnicodeTag(unicodeTag)
+    def __init__(self, src="", unicode_tag=""):
+        self._src = src
+        self._unicode_tag = unicode_tag
 
     def __str__(self, *args, **kwargs):
         return "%s()" % (self.__class__.__name__)
 
     def __repr__(self, *args, **kwargs):
-        return "%s('%s...')" % (self.__class__.__name__, self.getSrc()[0:30])
+        return "%s('%s...')" % (self.__class__.__name__, self.src[0:30])
 
-    def getSrc(self):
-        return self.src
+    @property
+    def src(self):
+        return self._src
 
-    def setSrc(self, src):
-        self.src = str(src)
+    @src.setter
+    def src(self, src):
+        self._src = str(src)
 
-    def getUnicodeTag(self):
-        return self.unicodeTag
+    @property
+    def unicode_tag(self):
+        return self._unicode_tag
 
-    def setUnicodeTag(self, unicodeTag):
-        self.unicodeTag = str(''.join(c for c in unicodedata.normalize('NFD', unicode(unicodeTag)) if unicodedata.category(c) != 'Mn'))
+    @unicode_tag.setter
+    def unicode_tag(self, unicode_tag):
+        self._unicode_tag = str(''.join(c for c in unicodedata.normalize('NFD', unicode(unicode_tag)) if unicodedata.category(c) != 'Mn'))
 
-    def fillFromHtmlXpathSelector(self, htmlXPS):
+    def fill_from_html_xpathselector(self, htmlXPS):
         src = htmlXPS.select('@src').extract()
         if(src):
-            self.setSrc(src[0])
-        self.setUnicodeTag(htmlXPS.extract())
+            self.src = src[0]
+        self.unicode_tag = htmlXPS.extract()
 
-    def checkRemoteURL(self, url):
-        response = linkcheck.checkURL(url)
+    def check_remote_url(self, url):
+        response = linkcheck.check_url(url)
         if(isinstance(response, int)):
             if(response / 100 == 2):  # success
-                log.msg("[%s] %r reference status its ok (%d)" % (self.getPipeline(), self, response), level=log.DEBUG, spider=self.getSpider())
+                log.msg("[%s] %r reference status its ok (%d)" % (self.pipeline, self, response), level=log.DEBUG, spider=self.spider)
                 veredict = SafebrowsinglookupClient().lookup(url)
                 if(veredict[url] in ('phishing', 'malware', 'phishing,malware')):
-                    self.addReportMessage("%s found in the remote URL %s" % (self.getPipeline(), veredict[url].capitalize(), url), "DANGER")
-                    log.msg("[%s] %s found in the remote URL %s" % (self.getPipeline(), veredict[url].capitalize(), url), level=log.DEBUG, spider=self.getSpider())
-                log.msg("[%s] Google safe browsing lookup veredict:(%s : %s)" % (self.getPipeline(), url, veredict[url]), level=log.DEBUG, spider=self.getSpider())
+                    self.add_report_message("%s found in the remote URL %s" % (self.pipeline, veredict[url].capitalize(), url), "DANGER")
+                    log.msg("[%s] %s found in the remote URL %s" % (self.pipeline(), veredict[url].capitalize(), url), level=log.DEBUG, spider=self.spider)
+                log.msg("[%s] Google safe browsing lookup veredict:(%s : %s)" % (self.pipeline(), url, veredict[url]), level=log.DEBUG, spider=self.spider)
 
             elif(response / 100 == 4):  # client error, probably broken link
-                self.addReportMessage("The url refence '%s' is broken (status code %d)" % (url, response), "WARNING")
-                log.msg("[%s] %r reference is broken (status code %d)" % (self.getPipeline(), self, response), level=log.DEBUG, spider=self.getSpider())
+                self.add_report_message("The url refence '%s' is broken (status code %d)" % (url, response), "WARNING")
+                log.msg("[%s] %r reference is broken (status code %d)" % (self.pipeline, self, response), level=log.DEBUG, spider=self.spider)
 
             elif(response / 100 == 5):  # server error, probably a temporarily broken link
-                self.addReportMessage("The url refence '%s' server error (status code %d)" % (url, response), "WARNING")
-                log.msg("[%s] %r reference is broken (status code %d)" % (self.getPipeline(), self, response), level=log.DEBUG, spider=self.getSpider())
+                self.add_report_message("The url refence '%s' server error (status code %d)" % (url, response), "WARNING")
+                log.msg("[%s] %r reference is broken (status code %d)" % (self.pipeline, self, response), level=log.DEBUG, spider=self.spider)
         else:
-            log.msg("[%s] %r redirection detected!(from %s to %s)" % (self.getPipeline(), self, url, response), level=log.DEBUG, spider=self.getSpider())
-            self.addReportMessage("The url refence '%s' redirects to %s )" % (url, response), "WARNING")
-            self.checkRemoteURL(response)
+            log.msg("[%s] %r redirection detected!(from %s to %s)" % (self.pipeline, self, url, response), level=log.DEBUG, spider=self.spider)
+            self.add_report_message("The url refence '%s' redirects to %s )" % (url, response), "WARNING")
+            self.check_remote_url(response)
 
-    def suspiciousUrl(self):
-        url = self.getSrc()
+    def suspicious_url(self):
+        url = self.src
         if(url):
-            log.msg("[%s] Checking for malicious remote sites..." % (self.getPipeline()), level=log.INFO, spider=self.getSpider())
-            self.checkRemoteURL(url)
+            log.msg("[%s] Checking for malicious remote sites..." % (self.pipeline), level=log.INFO, spider=self.spider)
+            self.check_remote_url(url)
 
-    def checkForSuspiciousStuff(self):
-        self.suspiciousUrl()
+    def check_for_suspicious_stuff(self):
+        self.suspicious_url()
 
-    def getImageMimeTypes(self):
+    def image_mime_types(self):
         return ['image/gif', 'image/jpeg', 'image/png', 'application/x-shockwave-flash',
                 'image/psd', 'image/bmp image/tiff', 'image/tiff', 'application/octet-stream',
                 'image/jp2 ', 'application/octet-stream', 'application/octet-stream',
                  'application/x-shockwave-flash', 'image/iff', 'image/vnd.wap.wbmp',
                   'image/xbm', 'image/vnd.microsoft.icon']
 
-    def getURLExtension(self, url):
+    def url_extension(self, url):
         return mimetypes.guess_type(urlparse.urlsplit(url)[2])[0]
 
-    def isImage(self):
-        return self.getURLExtension(self.getSrc()) in self.getImageMimeTypes()
+    def is_image(self):
+        return self.url_extension(self.src) in self.image_mime_types()
 
 
 class ATag(Tag):
 
-    def fillFromHtmlXpathSelector(self, htmlXPS):
+    def fill_from_html_xpathselector(self, htmlXPS):
         src = htmlXPS.select('@href').extract()
         if(src):
-            self.setSrc(src[0])
-        self.setUnicodeTag(htmlXPS.extract())
+            self.src = src[0]
+        self.unicode_tag = htmlXPS.extract()
 
 
 class ScriptTag(Tag):
-    body = ""
 
     def __init__(self, src="", unicodeTag="", body=""):
         Tag.__init__(self, src, unicodeTag)
+        self._body = body
 
     def __repr__(self, *args, **kwargs):
-        if(self.getSrc()):
-            src = self.getSrc()
+        if(self.src):
+            src = self.src
         else:
-            src = self.getBody().strip()
+            src = self.body.strip()
         return "%s('%s...')" % (self.__class__.__name__, src[0:30])
 
-    def getSrc(self):
+    @property
+    def src(self):
         if(self.src):
             if(not urlparse.urlparse(self.src)[0]):
-                return urlparse.urljoin(self.getCurrentUrl(), self.src)
+                return urlparse.urljoin(self.current_url, self.src)
         return self.src
 
-    def getBody(self):
-        return self.body
+    @property
+    def body(self):
+        return self._body
 
-    def setBody(self, body):
-        self.body = str(body)
+    @body.setter
+    def body(self, body):
+        self._body = str(body)
 
-    def fillFromHtmlXpathSelector(self, htmlXPS):
-        Tag.fillFromHtmlXpathSelector(self, htmlXPS)
+    def fill_from_html_xpathselector(self, htmlXPS):
+        Tag.fill_from_html_xpathselector(self, htmlXPS)
         body = htmlXPS.select('text()')
         if(body):
-            self.setBody(body.extract()[0])
+            self.body = body.extract()[0]
 
-    def getJavascriptCode(self):
-        url = self.getSrc()
+    def javascript_code(self):
+        url = self.src
         if(url):
-            if(self.getURLExtension(url) == 'application/javascript'):
+            if(self.url_extension(url) == 'application/javascript'):
                 t = urllib2.urlopen(url)
                 js = t.read()
                 return js
         else:
-            return self.getBody()
+            return self.body
 
-    def checkForObfuscatedJavascript(self):
+    def check_for_obfuscated_javascript(self):
         pass
 
-    def checkForSuspiciousStuff(self):
-        Tag.checkForSuspiciousStuff(self)
-        self.checkForObfuscatedJavascript()
+    def check_for_suspicious_stuff(self):
+        Tag.check_for_suspicious_stuff(self)
+        self.check_for_obfuscated_javascript()
 
 
 class SizeableTag(Tag):
 
     def __init__(self, src="", unicodeTag="", height=99, width=99, style=""):
         Tag.__init__(self, src, unicodeTag)
-        self.setHeight(height)
-        self.setWidth(width)
-        self.setStyle(style)
+        self._height = height
+        self._width = width
+        self._style = style
 
-    def getHeight(self):
-        return self.height
+    @property
+    def height(self):
+        return self._height
 
-    def setHeight(self, height):
-        self.height = int(height)
+    @height.setter
+    def height(self, height):
+        self._height = int(height)
 
-    def getWidth(self):
-        return self.width
+    @property
+    def width(self):
+        return self._width
 
-    def setWidth(self, width):
-        self.width = int(width)
+    @width.setter
+    def width(self, width):
+        self._width = int(width)
 
-    def getStyle(self):
-        return self.style
+    @property
+    def style(self):
+        return self._style
 
-    def setStyle(self, style):
-        self.style = str(style)
+    @style.setter
+    def style(self, style):
+        self._style = str(style)
 
-    def fillFromHtmlXpathSelector(self, htmlXPS):
-        Tag.fillFromHtmlXpathSelector(self, htmlXPS)
+    def fill_from_html_xpathselector(self, htmlXPS):
+        Tag.fill_from_html_xpathselector(self, htmlXPS)
         height = htmlXPS.select('@height').extract()
         width = htmlXPS.select('@height').extract()
         style = htmlXPS.select('@style').extract()
         if(height):
-            self.setHeight(height[0])
+            self.height = height[0]
         if(width):
-            self.setWidth(width[0])
+            self.width = width[0]
         if(style):
-            self.setStyle(style[0])
+            self.style = style[0]
 
-    def suspiciousSize(self):
-        log.msg("[%s] Checking for suspicious size..." % (self.getPipeline()), level=log.INFO, spider=self.getSpider())
-        if((self.getHeight() < 5) or (self.getWidth() < 5)):
-            self.addReportMessage("Suspicious size found!! This tag is suspiciously small")
-            log.msg("[%s] Suspicious size found!! This tag (%r) is suspiciously small" % (self.getPipeline(), self), level=log.DEBUG, spider=self.getSpider())
-            self.suspiciousSizeTagAdditions()
+    def suspicious_size(self):
+        log.msg("[%s] Checking for suspicious size..." % (self.pipeline), level=log.INFO, spider=self.spider)
+        if((self.height < 5) or (self.width < 5)):
+            self.add_report_message("Suspicious size found!! This tag is suspiciously small")
+            log.msg("[%s] Suspicious size found!! This tag (%r) is suspiciously small" % (self.pipeline, self), level=log.DEBUG, spider=self.spider)
+            self.suspicious_size_tag_additions()
             return True
         else:
             return False
 
-    def suspiciousSizeTagAdditions(self):
+    def suspicious_size_tag_additions(self):
         raise NotImplementedError("Should have implemented this")
 
-    def suspiciousHidden(self):
-        log.msg("[%s] Checking for hidden tags..." % (self.getPipeline()), level=log.INFO, spider=self.getSpider())
-        styleWords = set(self.getStyle().replace(" ", "").replace(";", ":").split(":"))
-        if(set(["visibility", "hidden"]).issubset(styleWords) or set(["display", "none"]).issubset(styleWords)):
-            self.addReportMessage("%r: this tag is suspiciously hidden!" % (self))
-            log.msg("[%s] %r: this tag is suspiciously hidden!" % (self.getPipeline(), self), level=log.DEBUG, spider=self.getSpider())
+    def suspicious_hidden(self):
+        log.msg("[%s] Checking for hidden tags..." % (self.pipeline), level=log.INFO, spider=self.spider)
+        style_words = set(self.style.replace(" ", "").replace(";", ":").split(":"))
+        if(set(["visibility", "hidden"]).issubset(style_words) or set(["display", "none"]).issubset(style_words)):
+            self.add_report_message("%r: this tag is suspiciously hidden!" % (self))
+            log.msg("[%s] %r: this tag is suspiciously hidden!" % (self.pipeline, self), level=log.DEBUG, spider=self.spider)
 
-    def checkForSuspiciousStuff(self):
-        Tag.checkForSuspiciousStuff(self)
-        self.suspiciousSize()
-        self.suspiciousHidden()
+    def check_for_suspicious_stuff(self):
+        Tag.check_for_suspicious_stuff(self)
+        self.suspicious_size()
+        self.suspicious_hidden()
 
 
 class ImgTag(SizeableTag):
-    alt = ""
 
-    def getAlt(self):
-        return self.alt
+    def __init__(self, src="", unicodeTag="", height=99, width=99, style="", alt=""):
+        SizeableTag.__init__(self, src=src, unicodeTag=unicodeTag, height=height, width=width, style=style)
+        self._alt = alt
 
-    def setAlt(self, alt):
-        self.alt = str(''.join(c for c in unicodedata.normalize('NFD', unicode(alt)) if unicodedata.category(c) != 'Mn'))
+    @property
+    def alt(self):
+        return self._alt
 
-    def fillFromHtmlXpathSelector(self, htmlXPS):
-        SizeableTag.fillFromHtmlXpathSelector(self, htmlXPS)
+    @alt.setter
+    def alt(self, alt):
+        self._alt = str(''.join(c for c in unicodedata.normalize('NFD', unicode(alt)) if unicodedata.category(c) != 'Mn'))
+
+    def fill_from_html_xpathselector(self, htmlXPS):
+        SizeableTag.fill_from_html_xpathselector(self, htmlXPS)
         alt = htmlXPS.select('@alt').extract()
         if(alt):
-            self.setAlt(alt[0])
+            self.alt = alt[0]
 
-    def suspiciousSizeTagAdditions(self):
+    def suspicious_size_tag_additions(self):
         pass
 
-    def checkForKeywordStuffing(self):
-        log.msg("[%s] Checking for keyword stuffing..." % (self.getPipeline()), level=log.INFO, spider=self.getSpider())
-        if(KeywordAnalizer().checkForKeywordStuffing(self.getAlt())):
-            log.msg("[%s] %r is victim of keyword stuffing!!" % (self.getPipeline(), self), level=log.DEBUG, spider=self.getSpider())
-            self.addReportMessage("This tag is victim of keyword stuffing!!")
+    def check_for_keywordstuffing(self):
+        log.msg("[%s] Checking for keyword stuffing..." % (self.pipeline), level=log.INFO, spider=self.spider)
+        if(KeywordAnalizer().check_for_keywordstuffing(self.alt)):
+            log.msg("[%s] %r is victim of keyword stuffing!!" % (self.pipeline, self), level=log.DEBUG, spider=self.spider)
+            self.add_report_message("This tag is victim of keyword stuffing!!")
 
-    def checkForSuspiciousExtension(self):
-        log.msg("[%s] Checking for suspicious extension..." % (self.getPipeline()), level=log.INFO, spider=self.getSpider())
+    def check_for_suspicious_extension(self):
+        log.msg("[%s] Checking for suspicious extension..." % (self.pipeline), level=log.INFO, spider=self.spider)
         if(not self.isImage()):
-            log.msg("[%s] %r reference is not an image!! that is really suspicious..." % (self.getPipeline(), self), level=log.DEBUG, spider=self.getSpider())
-            self.addReportMessage("This tag is not an image!!")
+            log.msg("[%s] %r reference is not an image!! that is really suspicious..." % (self.pipeline, self), level=log.DEBUG, spider=self.spider)
+            self.add_report_message("This tag is not an image!!")
 
-    def checkForSuspiciousStuff(self):
-        self.checkForSuspiciousExtension()
-        SizeableTag.checkForSuspiciousStuff(self)
-        self.checkForKeywordStuffing()
+    def check_for_suspicious_stuff(self):
+        self.check_for_suspicious_extension()
+        SizeableTag.check_for_suspicious_stuff(self)
+        self.check_for_keywordstuffing()
 
 
 class IframeTag(SizeableTag):
-    frameborder = 99
 
-    def getFrameborder(self):
-        return self.frameborder
+    def __init__(self, src="", unicodeTag="", height=99, width=99, style="", frameborder=99):
+        SizeableTag.__init__(self, src=src, unicodeTag=unicodeTag, height=height, width=width, style=style)
+        self._frameborder = frameborder
 
-    def setFrameborder(self, frameborder):
-        self.frameborder = int(frameborder)
+    @property
+    def frameborder(self):
+        return self._frameborder
 
-    def suspiciousFrameborder(self):
-        return not self.getFrameborder()  # suspicious is if frameborder is equal to zero
+    @frameborder.setter
+    def frameborder(self, frameborder):
+        self._frameborder = int(frameborder)
 
-    def suspiciousSizeTagAdditions(self):
+    def suspicious_frameborder(self):
+        return not self.frameborder  # suspicious is if frameborder is equal to zero
 
-        if(self.suspiciousFrameborder()):
-            self.addReportMessage("And have frameborder = 0(zero) too...thats \
-            really suspicious!")
+    def suspicious_size_tag_additions(self):
+        if(self.suspicious_frameborder()):
+            self.add_report_message("And have frameborder = 0(zero) too...thats really suspicious!")
             log.msg("[%s] %r is small and have frameborder = 0(zero)...thats \
-            really suspicious!" % (self.getPipeline(), self), level=log.DEBUG,
-            spider=self.getSpider())
+            really suspicious!" % (self.pipeline, self), level=log.DEBUG, spider=self.spider)
 
-    def fillFromHtmlXpathSelector(self, htmlXPS):
-        SizeableTag.fillFromHtmlXpathSelector(self, htmlXPS)
+    def fill_from_html_xpathselector(self, htmlXPS):
+        SizeableTag.fill_from_html_xpathselector(self, htmlXPS)
         frameborder = htmlXPS.select('@frameborder').extract()
         if(frameborder):
-            self.setFrameborder(htmlXPS.select('@frameborder').extract()[0])
+            self.frameborder = htmlXPS.select('@frameborder').extract()[0]
 
 
 class NullTag(SizeableTag):
@@ -307,14 +327,14 @@ class NullTag(SizeableTag):
         "Convert to a string and return it."
         return "Null"
 
-    def fillFromHtmlXpathSelector(self, htmlXPS):
+    def fill_from_html_xpathselector(self, htmlXPS):
         return self
 
-    def suspiciousSize(self):
+    def suspicious_size(self):
         pass
 
-    def suspiciousUrl(self):
+    def suspicious_url(self):
         pass
 
-    def suspiciousHidden(self):
+    def suspicious_hidden(self):
         pass

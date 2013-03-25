@@ -6,7 +6,7 @@ from urllib2 import urlopen, HTTPError, URLError
   the url of that redirection'''
 
 
-def checkURL(url):
+def check_url(url):
 
     try:
         response = urlopen(url=url, timeout=10)

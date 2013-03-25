@@ -4,7 +4,7 @@ from string import capitalize
 
 class TagFactory():
 
-    def getTagFromStr(self, nodename):
+    def tag_from_str(self, nodename):
         try:
             klass = str(capitalize(str(nodename)) + 'Tag')
             return globals()[klass]()
@@ -12,14 +12,14 @@ class TagFactory():
             print str(e)
             return NullTag()
 
-    def getTagFromHtmlXPathSelector(self, htmlXPS):
+    def tag_from_html_xpathselector(self, htmlXPS):
         nodename = htmlXPS.select('local-name()').extract()[0]
-        tag = self.getTagFromStr(nodename)
-        tag.fillFromHtmlXpathSelector(htmlXPS)
+        tag = self.tag_from_str(nodename)
+        tag.fill_from_html_xpathselector(htmlXPS)
         return tag
 
-    def getTagsFromHtmlXPathSelector(self, htmlXPSs):
+    def tags_from_html_xpathselector(self, htmlXPSs):
         tags = []
         for htmlXPS in htmlXPSs:
-            tags.append(self.getTagFromHtmlXPathSelector(htmlXPS))
+            tags.append(self.tag_from_html_xpathselector(htmlXPS))
         return tags

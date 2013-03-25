@@ -15,22 +15,22 @@ class KeywordAnalizer(object):
         value = unicode(self._slugify_strip_re.sub('', value).strip().lower())
         return str(self._slugify_hyphenate_re.sub(separator, value))
 
-    def keywordDensity(self, nkr, tkn):
+    def keyword_density(self, nkr, tkn):
         ''' Where Nkr is how many times you repeated a specific keyword and Tkn the total words in the analyzed text.
         Returns the round percent of this formula'''
         return round((nkr / tkn) * 100)
 
-    def checkForKeywordStuffing(self, string):
+    def check_for_keywordstuffing(self, string):
         text = self.slugify(string)
-        words = list(x for x in text.split(" ") if x not in self.stopWords())
+        words = list(x for x in text.split(" ") if x not in self.stop_words())
         wordsCount = len(words)
         if(wordsCount >= 10):
             wordsCounter = Counter(words)
-            return self.keywordDensity(wordsCounter.most_common(1)[0][1], wordsCount) > 3
+            return self.keyword_density(wordsCounter.most_common(1)[0][1], wordsCount) > 3
         else:
             return False
 
-    def stopWords(self):
+    def stop_words(self):
         return ['a', 'aca', 'ahi', 'ajena', 'ajenas', 'ajeno', 'ajenos', 'al', 'algo', 'algun',
         'alguna', 'algunas', 'alguno', 'algunos', 'alla', 'alli', 'alli', 'ambos', 'ampleamos',
         'ante', 'antes', 'aquel', 'aquella', 'aquellas', 'aquello', 'aquellos', 'aqui', 'aqui',

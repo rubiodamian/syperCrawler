@@ -29,8 +29,8 @@ class MessageReport():
     def add_report_message(self, report_messages, prefix=""):
         self.report_messages.append(ReportingMessage(report_messages, prefix))
 
-    def last_report_message(self):
+    def last_report_messages(self):
         return self.report_messages[len(self.report_messages) - 1]
 
     def modify_last_report_messages(self, message):
-        self.last_report_message.message(message)
+        self.report_messages.message(message)

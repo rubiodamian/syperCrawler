@@ -1,3 +1,9 @@
+# Define here the models for your scraped items
+#
+# See documentation in:
+# http://doc.scrapy.org/topics/items.html
+# un pipe por tag, reportar con arbol de objetos al q le mando el xpath y se imprimen
+
 from scrapy.item import Item, Field
 from sypercrawler.lib.tagfactory import TagFactory
 

@@ -10,10 +10,10 @@ from sypercrawler.items import ResponseItem
 
 class SyperCrawlerSpider(CrawlSpider):
     name = "syperCrawler"
-    allowed_domains = ['localhost']
+#    allowed_domains = ['localhost']
 #     login_page = 'http://localhost/dvwa/login.php'
     #start_urls = ['http://localhost/test/']  # urls from which the spider will start crawling
-    rules = [Rule(SgmlLinkExtractor(allow=[r'/test/test*']), callback='parse_item')]
+    rules = [Rule(SgmlLinkExtractor(), callback='parse_item')]
 
     def __init__(self, urls=None, domains=None, *a, **kw):
         CrawlSpider.__init__(self, *a, **kw)
@@ -21,7 +21,6 @@ class SyperCrawlerSpider(CrawlSpider):
             self.start_urls = urls.split(",")
         if(domains):
             self.allowed_domains = domains.split(",")
-
 #     def parse(self, response):
 #         return [FormRequest.from_response(response,
 #             formdata={'username': 'admin', 'password': 'password'},

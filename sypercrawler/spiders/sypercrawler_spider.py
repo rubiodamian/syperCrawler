@@ -1,8 +1,8 @@
 from scrapy.selector import HtmlXPathSelector
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
-from scrapy.http import FormRequest
-from scrapy.http import Request
+#from scrapy.http import FormRequest
+#from scrapy.http import Request
 from scrapy import log
 
 from sypercrawler.items import ResponseItem
@@ -19,8 +19,6 @@ class SyperCrawlerSpider(CrawlSpider):
 #         return [FormRequest.from_response(response,
 #             formdata={'username': 'admin', 'password': 'password'},
 #             callback=self.after_login)]
-
-
 #     def after_login(self, response):
 #         # check login succeed before going on
 #         if "authentication failed" in response.body:
@@ -30,22 +28,22 @@ class SyperCrawlerSpider(CrawlSpider):
 #             self.log("Login successful", level=log.INFO)
 #             return Request(url="http://localhost/dvwa/vulnerabilities/xss_s/",
 #                    callback=self.parse_tastypage)
-    _url_blacklist = []
+    _visited_urls = []
 
     @property
-    def url_blacklist(self):
-        return self._url_blacklist
+    def visited_urls(self):
+        return self._visited_urls
 
-    @url_blacklist.setter
-    def url_blacklist(self, url_blacklist):
-        self._url_blacklist = url_blacklist
+    @visited_urls.setter
+    def visited_urls(self, visited_urls):
+        self._visited_urls = visited_urls
 
-    def add_url_to_blacklist(self, url):
+    def add_visited_url(self, url):
         if(url):
-            self.url_blacklist.append(url)
+            self.visited_urls.append(url)
 
-    def is_url_in_blacklist(self, url):
-        return url in self.url_blacklist
+    def is_a_visited_url(self, url):
+        return url in self.visited_urls
 
     def parse_item(self, response):
         hxs = HtmlXPathSelector(response)

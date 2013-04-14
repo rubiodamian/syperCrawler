@@ -6,6 +6,7 @@
 
 from scrapy.item import Item, Field
 from sypercrawler.lib.tagfactory import TagFactory
+from pprint import pformat
 
 
 class ResponseItem(Item):
@@ -44,3 +45,13 @@ class ResponseItem(Item):
 
     def set_iframe_tags(self, iframe_tags):
         self['iframe_tags'] = TagFactory().tags_from_html_xpathselector(iframe_tags)
+
+    def console_report(self):
+        report = []
+        for tag in self.get_iframe_tags():
+            report.append(tag.console_report())
+        for tag in self.get_a_tags():
+            report.append(tag.console_report())
+        for tag in self.get_img_tags():
+            report.append(tag.console_report())
+        return pformat(report)

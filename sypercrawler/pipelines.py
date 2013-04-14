@@ -5,6 +5,16 @@
 from scrapy import log
 
 
+class ConsoleReportPipeline(object):
+
+    def __repr__(self, *args, **kwargs):
+        return self.__class__.__name__
+
+    def process_item(self, item, spider):
+        log.msg("[Report] %s report: \n %s" % (item.get_url(), item.console_report()), level=log.INFO, spider=spider)
+        return item
+
+
 class TagPipeline(object):
 
     def __repr__(self, *args, **kwargs):
@@ -59,7 +69,7 @@ class ATagPipeline(TagPipeline):
 class ImgTagPipeline(TagPipeline):
 
     def tag_collection(self, item):
-        return item.img_tags
+        return item.get_img_tags()
 
     def tag_description(self):
         return '<img> tags'

@@ -261,7 +261,7 @@ class ImgTag(SizeableTag):
 
     def check_for_suspicious_extension(self):
         log.msg("[%s] Checking for suspicious extension..." % (self.pipeline), level=log.INFO, spider=self.spider)
-        if(not self.isImage()):
+        if(not self.is_image()):
             log.msg("[%s] %r reference is not an image!! that is really suspicious..." % (self.pipeline, self), level=log.DEBUG, spider=self.spider)
             self.add_report_message("This tag is not an image!!")
 

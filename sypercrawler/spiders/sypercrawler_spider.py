@@ -55,13 +55,15 @@ class SyperCrawlerSpider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         item = ResponseItem()
         item.set_url(response.url)
-        print "\t"
-        self.log("Parsing <a> tags...", level=log.INFO)
+        print "\n"
+        log.msg("Starting the parsing of <%s>:" % (item.get_url()), level=log.INFO, spider=self)
+        log.msg("Parsing <a> tags...", level=log.INFO, spider=self)
         item.set_a_tags(hxs.select('//a[contains(@href, "http")]'))
-        self.log("Parsing <iframe> tags...", level=log.INFO)
+        log.msg("Parsing <iframe> tags...", level=log.INFO, spider=self)
         item.set_iframe_tags(hxs.select('//iframe[contains(@src, "http")]'))
-        self.log("Parsing <script> tags...", level=log.INFO)
+        log.msg("Parsing <script> tags...", level=log.INFO, spider=self)
         item.set_script_tags(hxs.select('//script'))
-        self.log("Parsing <img> tags...\n", level=log.INFO)
+        log.msg("Parsing <img> tags...", level=log.INFO, spider=self)
         item.set_img_tags(hxs.select('//img[contains(@src, "http")]'))
+        log.msg("End of <%s> parse.\n" % (item.get_url()), level=log.INFO, spider=self)
         return item

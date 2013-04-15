@@ -93,6 +93,8 @@ class Tag(object, MessageReport, ItemContext):
     def is_image(self):
         return self.url_extension(self.src) in self.image_mime_types()
 
+    def is_suspicious(self):
+        return len(self.report_messages)
 
 class ATag(Tag):
 

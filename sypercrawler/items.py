@@ -46,12 +46,18 @@ class ResponseItem(Item):
     def set_iframe_tags(self, iframe_tags):
         self['iframe_tags'] = TagFactory().tags_from_html_xpathselector(iframe_tags)
 
-    def console_report(self):
-        report = []
-        for tag in self.get_iframe_tags():
-            report.append(tag.console_report())
-        for tag in self.get_a_tags():
-            report.append(tag.console_report())
-        for tag in self.get_img_tags():
-            report.append(tag.console_report())
-        return pformat(report)
+    def tag_collections(self):
+        tag_collection = []
+        for (k, v) in self.items():
+            if(k != 'url'):
+                tag_collection += v
+        return  tag_collection
+
+    def is_empty(self):
+        return len(self.tag_collections())
+
+    def is_suspicious(self):
+        for tag in self.tag_collections():
+            if(tag.is_suspicious()):
+                return True
+        return False

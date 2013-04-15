@@ -3,6 +3,17 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/topics/item-pipeline.html
 from scrapy import log
+from pprint import pformat
+
+
+class FirstPipeline(object):
+
+    def __repr__(self, *args, **kwargs):
+        return self.__class__.__name__
+
+    def process_item(self, item, spider):
+        log.msg("Starting the verification of <%s>:" % (item.get_url()), level=log.INFO, spider=spider)
+        return item
 
 
 class ConsoleReportPipeline(object):
@@ -10,8 +21,15 @@ class ConsoleReportPipeline(object):
     def __repr__(self, *args, **kwargs):
         return self.__class__.__name__
 
+    def console_report(self, item):
+        report = []
+        for tag in item.tag_collections():
+            report.append(tag.console_report())
+        return pformat(report)
+
     def process_item(self, item, spider):
-        log.msg("[Report] %s report: \n %s" % (item.get_url(), item.console_report()), level=log.INFO, spider=spider)
+        self.console_report(item)
+        log.msg("[Report] %s report:\n\n %s \n" % (item.get_url(), self.console_report(item)), level=log.INFO, spider=spider)
         return item
 
 

@@ -54,7 +54,7 @@ class ResponseItem(Item):
         return  tag_collection
 
     def is_empty(self):
-        return len(self.tag_collections())
+        return not len(self.tag_collections())
 
     def is_suspicious(self):
         for tag in self.tag_collections():

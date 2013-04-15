@@ -29,7 +29,8 @@ class ConsoleReportPipeline(object):
 
     def process_item(self, item, spider):
         self.console_report(item)
-        log.msg("[Report] %s report:\n\n %s \n" % (item.get_url(), self.console_report(item)), level=log.INFO, spider=spider)
+        if(not item.is_empty()):
+            log.msg("[Report] %s report:\n\n %s \n" % (item.get_url(), self.console_report(item)), level=log.INFO, spider=spider)
         return item
 
 

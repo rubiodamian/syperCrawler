@@ -11,12 +11,15 @@ BOT_NAME = 'syperCrawler'
 SPIDER_MODULES = ['sypercrawler.spiders']
 NEWSPIDER_MODULE = 'sypercrawler.spiders'
 ITEM_PIPELINES = [
+    'sypercrawler.pipelines.EmptyItemFilterPipeline',
     'sypercrawler.pipelines.FirstPipeline',
     'sypercrawler.pipelines.IframeTagPipeline',
     'sypercrawler.pipelines.ATagPipeline',
     'sypercrawler.pipelines.ImgTagPipeline',
     'sypercrawler.pipelines.ScriptTagPipeline',
-    'sypercrawler.pipelines.ConsoleReportPipeline']
+    'sypercrawler.pipelines.NotSuspiciousItemFilterPipeline',
+    'sypercrawler.pipelines.ConsoleReportPipeline',
+    ]
 LOG_LEVEL = 'INFO'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent

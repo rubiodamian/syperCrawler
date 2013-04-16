@@ -53,6 +53,12 @@ class ResponseItem(Item):
                 tag_collection += v
         return  tag_collection
 
+    def console_report(self):
+        report = []
+        for tag in self.tag_collections():
+            report.append(tag.console_report())
+        return pformat(report)
+
     def is_empty(self):
         return not len(self.tag_collections())
 
@@ -60,4 +66,40 @@ class ResponseItem(Item):
         for tag in self.tag_collections():
             if(tag.is_suspicious()):
                 return True
+        return False
+
+    def clean_out(self):
+        for (k, v) in self.items():
+            if(k != 'url'):
+                suspicious_tags = list(tag for tag in v if tag.is_suspicious())
+                if(not len(suspicious_tags)):
+                    del self[k]
+                else:
+                    self[k] = suspicious_tags
+
+
+class NullItem(ResponseItem):
+
+    def __call__(self, *args, **kwargs):
+        "Ignore method calls."
+        return self
+
+    def __repr__(self):
+        "Return a string representation."
+        return "<Null>"
+
+    def __str__(self):
+        "Convert to a string and return it."
+        return "Null"
+
+    def tag_collections(self):
+        return  None
+
+    def console_report(self):
+        return None
+
+    def is_empty(self):
+        return True
+
+    def is_suspicious(self):
         return False

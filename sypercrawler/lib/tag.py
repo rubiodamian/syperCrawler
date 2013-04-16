@@ -10,6 +10,7 @@ import unicodedata
 import mimetypes
 import urlparse
 import urllib2
+import re
 
 
 class Tag(object, MessageReport, ItemContext):
@@ -32,7 +33,7 @@ class Tag(object, MessageReport, ItemContext):
 
     @src.setter
     def src(self, src):
-        self._src = str(src)
+        self._src = str(src.encode('utf-8'))
 
     @property
     def unicode_tag(self):
@@ -40,7 +41,8 @@ class Tag(object, MessageReport, ItemContext):
 
     @unicode_tag.setter
     def unicode_tag(self, unicode_tag):
-        self._unicode_tag = str(''.join(c for c in unicodedata.normalize('NFD', unicode(unicode_tag)) if unicodedata.category(c) != 'Mn'))
+#        print unicode_tag.encode('utf-8'),'------'
+        self._unicode_tag = unicode_tag.encode('utf-8')  # str(''.join(c for c in unicodedata.normalize('NFD', unicode(unicode_tag)) if unicodedata.category(c) != 'Mn'))
 
     def fill_from_html_xpathselector(self, htmlXPS):
         src = htmlXPS.select('@src').extract()
@@ -67,9 +69,10 @@ class Tag(object, MessageReport, ItemContext):
                 self.add_report_message("The url refence '%s' server error (status code %d)" % (url, response), "WARNING")
                 log.msg("[%s] %r reference is broken (status code %d)" % (self.pipeline, self, response), level=log.DEBUG, spider=self.spider)
         else:
-            log.msg("[%s] %r redirection detected!(from %s to %s)" % (self.pipeline, self, url, response), level=log.DEBUG, spider=self.spider)
-            self.add_report_message("The url refence '%s' redirects to %s )" % (url, response), "WARNING")
-            self.check_remote_url(response)
+            if(url != response and response != "Error"):
+                log.msg("[%s] %r redirection detected!(from %s to %s)" % (self.pipeline, self, url, response), level=log.DEBUG, spider=self.spider)
+                self.add_report_message("The url refence '%s' redirects to %s )" % (url, response), "WARNING")
+                self.check_remote_url(response)
 
     def suspicious_url(self):
         url = self.src
@@ -95,6 +98,7 @@ class Tag(object, MessageReport, ItemContext):
 
     def is_suspicious(self):
         return len(self.report_messages)
+
 
 class ATag(Tag):
 
@@ -136,7 +140,7 @@ class ScriptTag(Tag):
 
     @body.setter
     def body(self, body):
-        self._body = str(body)
+        self._body = str(''.join(c for c in unicodedata.normalize('NFD', unicode(body)) if unicodedata.category(c) != 'Mn'))
 
     def fill_from_html_xpathselector(self, htmlXPS):
         Tag.fill_from_html_xpathselector(self, htmlXPS)
@@ -164,7 +168,7 @@ class ScriptTag(Tag):
 
 class SizeableTag(Tag):
 
-    def __init__(self, src="", unicodeTag="", height=99, width=99, style=""):
+    def __init__(self, src="", unicodeTag="", height=-1, width=-1, style=""):
         Tag.__init__(self, src, unicodeTag)
         self._height = height
         self._width = width
@@ -176,7 +180,9 @@ class SizeableTag(Tag):
 
     @height.setter
     def height(self, height):
-        self._height = int(height)
+        int_height = re.search(r'\d+', height)
+        if(int_height):
+            self._height = int(int_height.group())
 
     @property
     def width(self):
@@ -184,7 +190,9 @@ class SizeableTag(Tag):
 
     @width.setter
     def width(self, width):
-        self._width = int(width)
+        int_width = re.search(r'\d+', width)
+        if(int_width):
+            self._width = int(int_width.group())
 
     @property
     def style(self):
@@ -208,7 +216,8 @@ class SizeableTag(Tag):
 
     def suspicious_size(self):
         log.msg("[%s] Checking for suspicious size..." % (self.pipeline), level=log.INFO, spider=self.spider)
-        if((self.height < 5) or (self.width < 5)):
+        suspicious_size = range(0, 5)
+        if((self.height in suspicious_size) or (self.width in suspicious_size)):
             self.add_report_message("Suspicious size found!! This tag is suspiciously small")
             log.msg("[%s] Suspicious size found!! This tag (%r) is suspiciously small" % (self.pipeline, self), level=log.DEBUG, spider=self.spider)
             self.suspicious_size_tag_additions()
@@ -234,7 +243,7 @@ class SizeableTag(Tag):
 
 class ImgTag(SizeableTag):
 
-    def __init__(self, src="", unicodeTag="", height=99, width=99, style="", alt=""):
+    def __init__(self, src="", unicodeTag="", height=-1, width=-1, style="", alt=""):
         SizeableTag.__init__(self, src=src, unicodeTag=unicodeTag, height=height, width=width, style=style)
         self._alt = alt
 
@@ -275,7 +284,7 @@ class ImgTag(SizeableTag):
 
 class IframeTag(SizeableTag):
 
-    def __init__(self, src="", unicodeTag="", height=99, width=99, style="", frameborder=99):
+    def __init__(self, src="", unicodeTag="", height=-1, width=-1, style="", frameborder=-1):
         SizeableTag.__init__(self, src=src, unicodeTag=unicodeTag, height=height, width=width, style=style)
         self._frameborder = frameborder
 

@@ -1,5 +1,4 @@
 '''Interface that allows to a class have a collection of messages to report'''
-from pprint import pformat
 
 
 class ReportingMessage(object):

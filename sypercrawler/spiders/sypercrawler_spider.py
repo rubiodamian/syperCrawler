@@ -15,12 +15,17 @@ class SyperCrawlerSpider(CrawlSpider):
     #start_urls = ['http://localhost/test/']  # urls from which the spider will start crawling
     rules = [Rule(SgmlLinkExtractor(), callback='parse_item')]
 
-    def __init__(self, urls=None, domains=None, *a, **kw):
+    def __init__(self, urls=None, domains=None, report_file=None, *a, **kw):
         CrawlSpider.__init__(self, *a, **kw)
         if(urls):
             self.start_urls = urls.split(",")
         if(domains):
             self.allowed_domains = domains.split(",")
+        if(report_file):
+            self._report_file = open(report_file, 'wa')
+        else:
+            self._report_file = None
+
 #     def parse(self, response):
 #         return [FormRequest.from_response(response,
 #             formdata={'username': 'admin', 'password': 'password'},
@@ -50,6 +55,14 @@ class SyperCrawlerSpider(CrawlSpider):
 
     def is_a_visited_url(self, url):
         return url in self.visited_urls
+
+    @property
+    def report_file(self):
+        return self._report_file
+
+    @report_file.setter
+    def report_file(self, report_file):
+        self._report_file = report_file
 
     def parse_item(self, response):
         hxs = HtmlXPathSelector(response)
